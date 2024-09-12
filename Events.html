@@ -1,0 +1,488 @@
+<!--Event Handling Chapter-->
+
+<!--1.Polling vs Event Handling-->
+           
+<!--2.Event Listener and Event Handler-->
+<p>Click this document to activate the handler.</p>
+<script>
+    window.addEventListener("click", () => {
+    console.log("You knocked?");
+    });
+</script>
+
+
+<!--3.Events and DOM nodes
+
+   1.Event handlers can be registered on different types of DOM nodes.
+   2.This allows specific elements to react to user interactions such as clicks, keypresses, or mouse movements
+   3.Event Listener on a button:  -->
+   <button>Click me</button>
+   <p>No handler here.</p>
+   
+   <script>
+     let buttonEl= document.querySelector("button");
+     buttonEl.addEventListener("click", () => {
+       console.log("Button clicked.");
+     });
+   </script>
+   
+
+
+<!--4.Onclick Attribute vs Event Listener-->
+<!--Onclick attribute-->       
+<button onclick="alert('Button clicked!')">Click me</button>        
+<!--Event Listener-->          
+<script>
+button.addEventListener("click", () => {
+  console.log("Button clicked.");
+});
+</script>
+                                      
+
+<!--5.Removing Event handlers-->
+<button>Act-once button</button>
+<script>
+  let button = document.querySelector("button");
+  function once() {
+    console.log("Done.");
+    button.removeEventListener("click", once); // Remove handler after first click
+  }
+
+  button.addEventListener("click", once);
+</script>
+
+
+
+<!--6.Event object-->
+<!--1.The event handler functions are passed an argument:event object
+    2.event object holds additional information aobut the event  -->
+
+    <button>Click me any way you want</button>
+    <script>
+      let buttonElement = document.querySelector("button");
+      buttonElement.addEventListener("mousedown", event => {
+        if (event.button == 0) {
+          console.log("Left button");
+        } else if (event.button == 1) {
+          console.log("Middle button");
+        } else if (event.button == 2) {
+          console.log("Right button");
+        }
+      });
+    </script>
+<!--Event properties:-
+                    1.type-This property holds type of event as string
+                    2.target-this property refers to element on which the event occurred
+                    3.button-this propertty refers to which mouse button was pressed
+                    4.clientX/clientY-this property stores X and Y coordinates of the mouse pointer when event is triggered
+                    5.key -for keyboard events,this property contains value of a key pressed
+--> 
+<!--Types of events:-
+                    1.mouse events-"click,dblclick","mousedown","mouseup","mousemove"
+                    2.keyboard events-"keyup", "keydown"
+                    3.form events-"submit","change","input"
+                    4.window events-"resize","scroll","load"
+-->
+
+
+
+<!--7.Event Propagation:-
+                    In JavaScript, events propagate through the DOM in a process that consists of three main phases:
+                      1.Capturing Phase 
+                      2.Target Phase
+                      3.Bubbling Phase
+-->
+<p>A paragraph with a <button>button</button>.</p>
+<script>
+  let para = document.querySelector("p");
+  let buttonElem = document.querySelector("button");
+  
+  para.addEventListener("mousedown", () => {
+    console.log("Handler for paragraph.");
+  });
+  
+  buttonElem.addEventListener("mousedown", event => {
+    console.log("Handler for button.");
+    if (event.button == 2) event.stopPropagation();
+  });
+</script>
+<!--1.If you press any mouse button other than the right button, both handlers will run
+          Handler for button.
+          Handler for paragraph.
+    2.If you press the right mouse button (event.button == 2), 
+      the stopPropagation() method is called, stopping the event from propagating to the paragraph
+          Handle =r for button        -->
+
+
+<!--Event.target property-->
+<button>A</button>
+<button>B</button>
+<button>C</button>
+<script>
+  document.body.addEventListener("click", event => {
+    if (event.target.nodeName == "BUTTON") {
+      console.log("Clicked", event.target.textContent);
+    }
+  });
+</script>
+
+
+
+<!--8.Default actions
+            1.Many events have default actions
+            2.they can be prevented by calling preventDefault() methon on event object-->
+<a href="https://developer.mozilla.org/">MDN</a>
+<script>
+  let link = document.querySelector("a");
+  link.addEventListener("click", event => {
+      console.log("Nope.");
+      event.preventDefault();
+  });
+</script>
+            
+
+
+<!--9.Key Events:- Key events allow you to respond to user keyboard inputs
+                    1.Keyup-Triggered when key is pressed down
+                    2.keydown-Triggered when key is released
+-->
+<p>This page turns violet when you hold the V key.</p>
+<script>
+  window.addEventListener("keydown", event => {
+    if (event.key == "v") {
+      document.body.style.background = "violet";
+    }
+  });
+  
+  window.addEventListener("keyup", event => {
+    if (event.key == "v") {
+      document.body.style.background = "";
+    }
+  });
+</script>
+<!--event.key property:-
+                        1.It gives value of the key that was pressed
+                        2.For most keys,it return character associated with key
+                        3.For special keys like enter,spacebar,it returns stringname("Enter","")
+                        4.For modifier keys like ctrl,shift,alt,meta,it works in combination with other keys
+                          They can be detected using properties like ctrlKey,shiftKey,etc
+-->
+<p>Press Control-Space to continue.</p>
+<script>
+  window.addEventListener("keydown", event => {
+    if (event.key == " " && event.ctrlKey) {
+      console.log("Continuing!");
+    }
+  });
+</script>
+
+<!--Studied about Focus and textinput in key events-->
+<!--Studied about Pointer events-->                        
+
+
+
+<!--10.Mouse click events:-
+                        1.mousedown: Triggered when the mouse button is pressed down.
+                        2.mouseup: Triggered when the mouse button is released.
+                        3.click: Triggered when a mouse button is both pressed and released on the same element.
+                        4.dblclick: Triggered when two clicks happen close together in time (double-click).
+    Mouse coordinates:- 
+                        1.clientX and clientY: coordinates relative to upper left corner of viewport
+                        2.pageX and pageY:coordinates relative to upper left corner of entire document
+
+-->
+<style>
+  body {
+    height: 200px;
+    background: beige;
+  }
+  .dot {
+    height: 8px;
+    width: 8px;
+    border-radius: 50%;
+    background: teal;
+    position: absolute;
+  }
+</style>
+
+<script>
+  window.addEventListener("click", event => {
+    let dot = document.createElement("div");
+    dot.className = "dot";
+    dot.style.left = (event.pageX - 4) + "px";  // Center the dot
+    dot.style.top = (event.pageY - 4) + "px";
+    document.body.appendChild(dot);
+  });
+</script>
+                       
+
+
+<!--11.Mouse motion and dragging:-
+                              1.Mouse movement can be tracked using the mousemove event, which fires every time the mouse pointer moves. 
+                              2.This is especially useful for implementing dragging and resizing elements on the page like interactions.
+                              3.Example:Resizing a bar with dragging        -->
+                              <p>Drag the bar to change its width:</p>
+                              <div style="background: orange; width: 60px; height: 20px"></div>
+                              <script>
+                                let lastX; // Tracks the last observed mouse X position
+                                let bar = document.querySelector("div");
+                            
+                                bar.addEventListener("mousedown", event => {
+                                  if (event.button == 0) {
+                                    lastX = event.clientX; 
+                                    window.addEventListener("mousemove", moved); 
+                                    event.preventDefault(); 
+                                  }
+                                });
+                              
+                                function moved(event) {
+                                  
+                                  if (event.buttons == 0) {
+                                    window.removeEventListener("mousemove", moved);
+                                  } else {
+                                    
+                                    let dist = event.clientX - lastX;
+                                    // Update the bar's width, ensuring it doesn't shrink below 10px
+                                    let newWidth = Math.max(10, bar.offsetWidth + dist);
+                                    bar.style.width = newWidth + "px";
+                                    // Update the lastX to the current X position
+                                    lastX = event.clientX;
+                                  }
+                                }
+                              </script>
+                              
+
+
+
+<!--12.Touch events: Touch events allow developers to handle user interactions on touchscreens, such as smartphones and tablets
+                        1.touchstart
+                        2.touchmove
+                        3.touchend
+                  They support multiple touch points at the same time.Properties of touch events:
+                        1.event.touches
+                        2.event.changedTouches
+                  Example: 
+                  -->
+                  <style>
+                    dot {
+                      position: absolute;
+                      display: block;
+                      border: 2px solid red;
+                      border-radius: 50px;
+                      height: 100px;
+                      width: 100px;
+                    }
+                  </style>
+                  
+                  <p>Touch this page</p>
+                  
+                  <script>
+                    function update(event) {
+                      // Remove any existing dots.Before creating new dots, the program first removes any existing dots.
+                      for (let dot; dot = document.querySelector("dot");) {
+                        dot.remove();
+                      }
+                      for (let i = 0; i < event.touches.length; i++) {
+                        let {pageX, pageY} = event.touches[i];
+                        let dot = document.createElement("dot");
+                        dot.style.left = (pageX - 50) + "px";
+                        dot.style.top = (pageY - 50) + "px";
+                        document.body.appendChild(dot);
+                      }
+                    }
+                  
+                    // Listen to touch events
+                    window.addEventListener("touchstart", update);
+                    window.addEventListener("touchmove", update);
+                    window.addEventListener("touchend", update);
+                  </script>
+
+
+
+<!--13.Scroll events
+                  1.Scroll events fire when an element is scrolled
+                  2.Example:Scroll progress bar
+                  -->
+                  <style>
+                   
+                    #progress {
+                      border-bottom: 2px solid blue;
+                      width: 0;
+                      position: fixed;
+                      top: 0; 
+                      left: 0;
+                    }
+                  </style>
+                  
+                  
+                  <div id="progress"></div>
+                  
+                  <script>
+                    document.body.appendChild(document.createTextNode(
+                      "supercalifragilisticexpialidocious ".repeat(1000)));
+                  
+                    let bar1 = document.querySelector("#progress");
+                    window.addEventListener("scroll", () => {
+                      // Calculate the maximum scrollable height
+                      let max = document.body.scrollHeight - innerHeight;
+                      bar1.style.width = `${(pageYOffset / max) * 100}%`;
+                    });
+                  </script>
+                                  
+
+
+
+                                  
+<!--14.Focus events:-
+                    1.Focus events occur when an element gains or loses focus
+                    2.Event types:-
+                                    1.focus: Fired when an element gains focus
+                                    2.blur: Fired when an element loses focus
+                    3.Example:
+                    -->
+                    <p>Name: <input type="text" data-help="Your full name"></p>
+                    <p>Age: <input type="text" data-help="Your age in years"></p>
+                    <p id="help"></p>
+                    
+                    <script>
+                      let help = document.querySelector("#help");
+                      let fields = document.querySelectorAll("input");
+                      for (let field of fields) {
+                        field.addEventListener("focus", event => {
+                          let text = event.target.getAttribute("data-help");
+                          help.textContent = text;
+                        });
+                        field.addEventListener("blur", () => {
+                          help.textContent = "";
+                        });
+                      }
+                    </script>
+                    
+
+
+
+<!--15.Load event:
+                1.Executes when the entire page is fully loaded,useful for initialization tasks that require all elements and external resources to be available.
+                2.The load event can also be used on individual elements like <img> and <script>  
+-->
+              <script>window.addEventListener("load", () => {
+              console.log("Page fully loaded!");
+                       // Initialization code can go here
+              });
+              </script>
+<!--beforeunload event:-                
+                1.The beforeunload event triggers when the user attempts to close the page or navigate away.  
+-->
+<script>window.addEventListener("beforeunload", (event) => {
+  event.preventDefault();
+  event.returnValue = "You have unsaved changes. Are you sure you want to leave?";
+});
+</script>
+
+
+
+
+<!--16.Events and event loops:-
+                              1.In JavaScript, browser event handlers are part of the event loop, which coordinates the execution of asynchronous tasks like event callbacks
+                              2. Events are processed only when the event loop is free
+                  web workers:-
+                              1. Web workers allow you to offload long-running tasks into a separate thread, which runs independently from the main thread. 
+                              2.Example:-Squaring numbers using webworkers    
+-->
+                          <!--worker script-squareworkers.js>-->
+                            <script>addEventListener("message", event => {
+                            let result = event.data * event.data;
+                            postMessage(result);  // Send back the square
+                            });
+                            </script>
+                          <!--main script-->
+                            <script>
+                            let squareWorker = new Worker("squareworker.js");
+                            squareWorker.addEventListener("message", event => {
+                            console.log("Worker responded:", event.data);  // Log the squared number
+                            });
+                            squareWorker.postMessage(10);
+                            squareWorker.postMessage(24);
+                            </script>
+
+
+
+
+<!--17.Timers-->
+<!--setTimeout() and clearTimeout():-
+                                    1.setTimeout,Runs a function once after a delay
+                                    2.clearTimeout,Cancels the scheduled setTimeout   -->
+                                  
+                                    <script>
+                                      let bombTimer=setTimeout(() => {
+                                        console.log("Boom")
+                                      },500);
+                                      if (Math.random()<0.5) {
+                                        console.log("Defused")
+                                        clearTimeout(bombTimer)
+                                      }
+                                        </script>
+<!--setInterval and clearInterval:-
+                                  1.setInterval,runs a function repeatedly at intervals.
+                                  2.clearInterval,cancels the repeated execution of setInterval.   
+-->
+<script>
+let ticks = 0;
+let clock = setInterval(() => {
+  console.log("tick", ticks++);
+  if (ticks == 10) {
+    clearInterval(clock);
+    console.log("stop.");
+  }
+}, 200);
+</script>
+
+<!--requestAnimationFrame() and cancelAnimationFrame():-
+                              1.requestAnimationFrame,Ideal for smoother animations in sync with the browser’s refresh rate.
+                              2.cancelAnimationFrame,Stops a scheduled animation frame.
+-->
+<script>
+let frameId = requestAnimationFrame(step);
+function step() {
+  console.log("Animating...");
+  frameId = requestAnimationFrame(step); // Keep requesting the next frame
+}
+cancelAnimationFrame(frameId);
+</script>0
+
+
+
+
+
+<!--18.Debouncing:- 
+                 1.Debouncing is a technique used to limit the rate at which a function is executed,It ensures that the function is called only after a certain amount of time has passed since the last event.
+                 2.There are two common debounce patterns: 1.Waiting for a pause 
+                                                           2.Spaced execution 
+-->
+<!--Waiting for pause-->
+<textarea>Type something here...</textarea>
+<script>
+  let textarea = document.querySelector("textarea");
+  let timeout;
+
+  textarea.addEventListener("input", () => {
+    clearTimeout(timeout); // Clear any previous timeout
+    timeout = setTimeout(() => {
+      console.log("Typed!");
+    }, 500);   //set a new timeout
+  });
+</script>
+<!--spaced execution(tracking mouse movements)-->
+<script>
+  let scheduled = null;
+
+  window.addEventListener("mousemove", event => {
+    if (!scheduled) {
+      setTimeout(() => {
+        document.body.textContent = `Mouse at ${scheduled.pageX}, ${scheduled.pageY}`;
+        scheduled = null; // Reset to allow the next event to be scheduled
+      }, 250); // Updating  every 250 milliseconds
+    }
+    scheduled = event;
+  });
+</script>
